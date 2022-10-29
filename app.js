@@ -49,7 +49,7 @@ app.post('/signup', async (req, res) => {
 
   try {
       await client.connect()
-      const database = client.db('app-data')
+      const database = client.db('whosNext')
       const users = database.collection('users')
 
       const existingUser = await users.findOne({email})
@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
 
   try {
       await client.connect()
-      const database = client.db('app-data')
+      const database = client.db('whosNext')
       const users = database.collection('users')
 
       const user = await users.findOne({email})
@@ -117,7 +117,7 @@ app.get('/user', async (req, res) => {
 
   try {
       await client.connect()
-      const database = client.db('app-data')
+      const database = client.db('whosNext')
       const users = database.collection('users')
 
       const query = {user_id: userId}
@@ -128,6 +128,28 @@ app.get('/user', async (req, res) => {
       await client.close()
   }
 })
+
+// Update User with a match
+app.put('/addmatch', async (req, res) => {
+  const client = new MongoClient(uri)
+  const {userId, matchedUserId} = req.body
+
+  try {
+      await client.connect()
+      const database = client.db('whosNext')
+      const users = database.collection('users')
+
+      const query = {user_id: userId}
+      const updateDocument = {
+          $push: {matches: {user_id: matchedUserId}}
+      }
+      const user = await users.updateOne(query, updateDocument)
+      res.send(user)
+  } finally {
+      await client.close()
+  }
+})
+
 
 // Server
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
