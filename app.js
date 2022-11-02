@@ -129,6 +129,36 @@ app.get('/user', async (req, res) => {
   }
 })
 
+// Get all Users by userIds in the Database
+app.get('/users', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userIds = JSON.parse(req.query.userIds)
+
+  try {
+      await client.connect()
+      const database = client.db('whosNext')
+      const users = database.collection('users')
+
+      const pipeline =
+          [
+              {
+                  '$match': {
+                      'user_id': {
+                          '$in': userIds
+                      }
+                  }
+              }
+          ]
+
+      const foundUsers = await users.aggregate(pipeline).toArray()
+
+      res.json(foundUsers)
+
+  } finally {
+      await client.close()
+  }
+})
+
 // Update User with a match
 app.put('/addmatch', async (req, res) => {
   const client = new MongoClient(uri)
@@ -149,7 +179,6 @@ app.put('/addmatch', async (req, res) => {
       await client.close()
   }
 })
-
 
 // Server
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
