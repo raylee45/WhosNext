@@ -6,7 +6,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const { MongoClient } = require('mongodb');
 const { v4:uuidv4 } = require('uuid');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 require('./config/passport')(passport);
