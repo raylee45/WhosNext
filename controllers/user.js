@@ -31,7 +31,14 @@ router.post('/signup', (req, res) => {
             const newUser = new User({
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                about: req.body.about,
+                dob_day: req.body.dob_day,
+                dob_month: req.body.dob_month,
+                dob_year: req.body.dob_year,
+                gender: req.body.gender,
+                preference: req.body.preference,
+                image: req.body.image,
             });
 
             // Salt and hash the password - before saving the user
