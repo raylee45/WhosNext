@@ -1,69 +1,79 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const Example = require('../models/message');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const { JWT_SECRET } = process.env;
+const mongoose = require('mongoose');
+const { MongoClient } = require('mongodb');
 
-// put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
+router.get('/messages', async (req, res) => {
+    const client = new MongoClient(MONGO_CONNECTION_STRING)
+    const { userId, correspondingUserId } = req.query
+    // console.log(userId, correspondingUserId)
+    try {
+      await client.connect()
+      const database = client.db('whosNext')
+      const messages = database.collection('messages')
+    
+      const query = {
+        from_userId: userId, to_userId: correspondingUserId
+      }
+      const foundMessages = await messages.find(query).toArray()
+      res.send(foundMessages)
+    } finally {
+        await client.close()
+    }
+  })
 
-router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-    // Purpose: Fetch all examples from DB and return
-    console.log('=====> Inside GET /examples');
+// router.get('/:id', (req, res) => {
+//     // Purpose: Fetch one example from DB and return
+//     console.log('=====> Inside GET /examples/:id');
 
-    Example.findById(req.params.id)
-    .then(foundExamples => {
-        res.json({ example: foundExamples });
-    })
-    .catch(err => {
-        console.log('Error in example#index:', err);
-        res.json({ message: 'Error occured... Please try again.'})
-    });
-});
-
-router.get('/query', (req, res) => {
-    // Purpose: Fetch one example by searching in DB and return
-    console.log('=====> Inside GET /examples/query');
-    console.log('=====> req.query', req.query);
-
-    Example.find(req.query)
-    .then(example => {
-        res.json({ example: example });
-    })
-    .catch(err => {
-        console.log('Error in example#query:', err);
-        res.json({ message: 'Error occured... Please try again.'})
-    });
-});
-
-router.get('/:id', (req, res) => {
-    // Purpose: Fetch one example from DB and return
-    console.log('=====> Inside GET /examples/:id');
-
-    Example.findById(req.params.id)
-    .then(example => {
-        res.json({ example: example });
-    })
-    .catch(err => {
-        console.log('Error in example#show:', err);
-        res.json({ message: 'Error occured... Please try again.'})
-    });
-});
+//     Example.findById(req.params.id)
+//     .then(example => {
+//         res.json({ example: example });
+//     })
+//     .catch(err => {
+//         console.log('Error in example#show:', err);
+//         res.json({ message: 'Error occured... Please try again.'})
+//     });
+// });
 
 
-router.post('/', (req, res) => {
-    // Purpose: Create one example by adding body to DB, and return
-    console.log('=====> Inside POST /examples');
-    console.log('=====> req.body', req.body); // object used for creating new example
+// router.post('/', (req, res) => {
+//     // Purpose: Create one example by adding body to DB, and return
+//     console.log('=====> Inside POST /examples');
+//     console.log('=====> req.body', req.body); // object used for creating new example
 
-    Example.create(req.body)
-    .then(newExample => {
-        console.log('New example created', newExample);
-        res.redirect(`/examples/${newExample.id}`);
-    })
-    .catch(err => {
-        console.log('Error in example#create:', err);
-        res.json({ message: 'Error occured... Please try again.'});
-    })
-});
+//     Example.create(req.body)
+//     .then(newExample => {
+//         console.log('New example created', newExample);
+//         res.redirect(`/examples/${newExample.id}`);
+//     })
+//     .catch(err => {
+//         console.log('Error in example#create:', err);
+//         res.json({ message: 'Error occured... Please try again.'});
+//     })
+// });
+
+/***** we are passing thru a message from the req.body.message.. *****
+ *****  while collecting our message collections *****/
+router.post('/message', async (req, res) => {
+    const client = new MongoClient(MONGO_CONNECTION_STRING)
+    const messsage = req.body.message
+  
+    try {
+      await client.connect()
+      const database = client.db('whosNext')
+      const messages = database.collection('messages')
+      const insertedMessage = await messages.insertOne(message)
+      res.send(insertedMessage)
+    } finally {
+        await client.close()
+    }
+  })
 
 
 

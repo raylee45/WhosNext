@@ -10,10 +10,21 @@ const { JWT_SECRET } = process.env;
 // DB Models
 const User = require('../models/user');
 
-// Controllers
-router.get('/test', (req, res) => {
+// put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
+router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    // Purpose: Fetch all users from DB and return
     res.json({ message: 'User endpoint OK! ✅' });
-});
+    console.log('=====> Inside GET /users');
+
+    User.findById(req.params.id)
+    .then(foundUsers => {
+        res.json({ user: foundUsers });
+    })
+    .catch(err => {
+        console.log('Error in user#index:', err);
+        res.json({ message: 'Error occured... Please try again.'})
+    });
+}); 
 
 router.post('/signup', (req, res) => {
     // POST - adding the new user to the database
@@ -104,26 +115,26 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// private
+
 router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.log('====> inside /profile');
     console.log(req.body);
     console.log('====> user')
     console.log(req.user);
-    const { id, name, email } = req.user; // object with user object inside
-    res.json({ id, name, email });
+    const { id, name, email, about, gender, preference, image } = req.user; // object with user object inside
+    res.json({ id, name, email, about, gender, preference, image });
 });
 
-router.get('/messages', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('====> inside /messages');
-    console.log(req.body);
-    console.log('====> user')
-    console.log(req.user);
-    const { id, name, email } = req.user; // object with user object inside
-    const messageArray = ['message 1', 'message 2', 'message 3', 'message 4', 'message 5', 'message 6', 'message 7', 'message 8', 'message 9'];
-    const sameUser = await User.findById(id);
-    res.json({ id, name, email, message: messageArray, sameUser });
-});
+// router.get('/messages', passport.authenticate('jwt', { session: false }), async (req, res) => {
+//     console.log('====> inside /messages');
+//     console.log(req.body);
+//     console.log('====> user')
+//     console.log(req.user);
+//     const { id, name, email } = req.user; // object with user object inside
+//     const messageArray = ['message 1', 'message 2', 'message 3', 'message 4', 'message 5', 'message 6', 'message 7', 'message 8', 'message 9'];
+//     const sameUser = await User.findById(id);
+//     res.json({ id, name, email, message: messageArray, sameUser });
+// });
 
 // Exports
 module.exports = router;
