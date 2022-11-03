@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Example = require('../models/example');
+const Example = require('../models/message');
 const passport = require('passport');
 
 // put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
