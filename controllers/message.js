@@ -65,7 +65,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
     console.log('=====> Inside POST /message');
     console.log('=====> req.body', req.body); // object used for creating new example
     const message = {
-      from_userId: req.user,
+      to_userId: req.user,
       message: req.body.message,
       timestamp: new Date().toISOString(),
       // to_userId: String,
