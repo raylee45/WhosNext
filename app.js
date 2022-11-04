@@ -117,22 +117,22 @@ app.get('/messages', async (req, res) => {
   }
 })
 
-/***** we are passing thru a message from the req.body.message.. *****
- *****  while collecting our message collections *****/
-app.post('/message', async (req, res) => {
-  const client = new MongoClient(MONGO_CONNECTION_STRING)
-  const messsage = req.body.message
+// /***** we are passing thru a message from the req.body.message.. *****
+//  *****  while collecting our message collections *****/
+// app.post('/message', async (req, res) => {
+//   const client = new MongoClient(MONGO_CONNECTION_STRING)
+//   const messsage = req.body.message
 
-  try {
-    await client.connect()
-    const database = client.db('whosNext')
-    const messages = database.collection('messages')
-    const insertedMessage = await messages.insertOne(message)
-    res.send(insertedMessage)
-  } finally {
-      await client.close()
-  }
-})
+//   try {
+//     await client.connect()
+//     const database = client.db('whosNext')
+//     const messages = database.collection('messages')
+//     const insertedMessage = await messages.insertOne(message)
+//     res.send(insertedMessage)
+//   } finally {
+//       await client.close()
+//   }
+// })
 
 
 
@@ -293,7 +293,7 @@ app.put('/addmatch', async(req, res) => {
 
 
 
-app.use('/examples', require('./controllers/message'));
+app.use('/message', require('./controllers/message'));
 app.use('/users', require('./controllers/user'));
 
 // Server

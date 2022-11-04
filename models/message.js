@@ -2,10 +2,15 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const messageSchema = new Schema({
-    name: String,
-    completed: Boolean,
+    from_userId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+    },
+    message: String,
+    timestamp: String,
+    to_userId: String,
 });
 
-const Message = mongoose.model('Message', messageSchema);
+const Messages = mongoose.model('Messages', messageSchema);
 
-module.exports = Message;
+module.exports = Messages;
