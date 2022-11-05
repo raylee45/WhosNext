@@ -11,18 +11,16 @@ const mongoose = require('mongoose');
 const Messages = require('../models/message');
 const User = require('../models/user')
 
-const index = async (req, res) => {
-  const allMessages = await db.Message.find();
-  if (allMessages.length >= 1) res.json({ messages: allMessages });
-  else res.json({ messages: 'There are no messages' });
-}
+// const index = async (req, res) => {
+//   const allMessages = await db.Message.find();
+//   if (allMessages.length >= 1) res.json({ messages: allMessages });
+//   else res.json({ messages: 'There are no messages' });
+// }
 
-const show = async (req, res) => {
-  const showMessage = await db.Message.findOne({ _id: req.params.id });
-  res.json({ message: showMessage });
-}
-
-
+// const show = async (req, res) => {
+//   const showMessage = await db.Message.findOne({ _id: req.params.id });
+//   res.json({ message: showMessage });
+// }
 
 
 // router.get('/message', async (req, res) => {
@@ -68,22 +66,10 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
       to_userId: req.user,
       message: req.body.message,
       timestamp: new Date().toISOString(),
-      // to_userId: String,
     }
 
     const insertedMessage = await Messages.create(message)
     res.send(insertedMessage)
-
-
-    // Message.create(req.body)
-    // .then(insertedMessage => {
-    //     console.log('New message created', insertedMessage);
-    //     res.send(insertedMessage);
-    // })
-    // .catch(err => {
-    //     console.log('Error in example#create:', err);
-    //     res.json({ message: 'Error occured... Please try again.'});
-    // })
 });
 
 /***** we are passing thru a message from the req.body.message.. *****
@@ -105,38 +91,38 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
 
 
-router.put('/:to_userId', (req, res) => {
-    // Purpose: Update one example in the DB, and return
-    console.log('=====> Inside PUT /message/:to_userId');
-    console.log('=====> req.params', req.params); // object used for finding example by id
-    console.log('=====> req.body', req.body); // object used for updating example
+// router.put('/', (req, res) => {
+//     // Purpose: Update one example in the DB, and return
+//     console.log('=====> Inside PUT /message/:to_userId');
+//     console.log('=====> req.params', req.params); // object used for finding example by id
+//     console.log('=====> req.body', req.body); // object used for updating example
 
-    Messages.findByIdAndUpdate(req.params.to_userId, req.body, { new: true })
-    .then(editedMessage => {
-        console.log('Message edited', editedMessage);
-        res.redirect(`/messages/${req.params.to_userId}`);
-    })
-    .catch(err => {
-        console.log('***** Error in editting message *****:', err);
-        res.json({ message: '***** ERROR *****'});
-    });
-});
+//     Messages.findByIdAndUpdate(req.params.to_userId, req.body, { new: true })
+//     .then(editedMessage => {
+//         console.log('Message edited', editedMessage);
+//         res.redirect(`/messages/${req.params.to_userId}`);
+//     })
+//     .catch(err => {
+//         console.log('***** Error in editting message *****:', err);
+//         res.json({ message: '***** ERROR *****'});
+//     });
+// });
 
-router.delete('/:to_userId', (req, res) => {
-    // Purpose: Update one example in the DB, and return
-    console.log('=====> Inside DELETE /message/:to_userId');
-    console.log('=====> req.params');
-    console.log(req.params); // object used for finding message by id
+// router.delete('/', (req, res) => {
+//     // Purpose: Update one example in the DB, and return
+//     console.log('=====> Inside DELETE /message/:to_userId');
+//     console.log('=====> req.params');
+//     console.log(req.params); // object used for finding message by id
     
-    Messages.findByIdAndRemove(req.params.to_userId)
-    .then(response => {
-        console.log(`Message ${req.params.to_userId} was deleted`, response);
-        res.redirect(`/message/${req.params.to_userId}`);
-    })
-    .catch(err => {
-        console.log('***** Error in deleting message *****:', err);
-        res.json({ message: '***** ERROR *****'});
-    });
-});
+//     Messages.findByIdAndRemove(req.params.to_userId)
+//     .then(response => {
+//         console.log(`Message ${req.params.to_userId} was deleted`, response);
+//         res.redirect(`/message/${req.params.to_userId}`);
+//     })
+//     .catch(err => {
+//         console.log('***** Error in deleting message *****:', err);
+//         res.json({ message: '***** ERROR *****'});
+//     });
+// });
 
 module.exports = router;
