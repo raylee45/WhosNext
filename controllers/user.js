@@ -8,7 +8,7 @@ const passport = require('passport');
 const { JWT_SECRET } = process.env;
 
 // DB Models
-const User = require('../models/user');
+const Users = require('../models/user');
 
 // put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -16,7 +16,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
     res.json({ message: 'User endpoint OK! ✅' });
     console.log('=====> Inside GET /users');
 
-    User.findById(req.params.id)
+    Users.findById(req.params.id)
     .then(foundUsers => {
         res.json({ user: foundUsers });
     })
@@ -31,10 +31,10 @@ router.post('/signup', (req, res) => {
     console.log('===> Inside of /signup');
     console.log('===> /register -> req.body',req.body);
 
-    User.findOne({ email: req.body.email })
-    .then(user => {
+    Users.findOne({ email: req.body.email })
+    .then(users => {
         // if email already exists, a user will come back
-        if (user) {
+        if (users) {
             // send a 400 response
             return res.status(400).json({ message: 'Email already exists' });
         } else {
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
     console.log('===> Inside of /login');
     console.log('===> /login -> req.body', req.body);
 
-    const foundUser = await User.findOne({ email: req.body.email });
+    const foundUser = await Users.findOne({ email: req.body.email });
 
     if (foundUser) {
         // user is in the DB
@@ -125,16 +125,29 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     res.json({ id, name, email, about, gender, preference, image });
 });
 
-// router.get('/messages', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     console.log('====> inside /messages');
-//     console.log(req.body);
-//     console.log('====> user')
-//     console.log(req.user);
-//     const { id, name, email } = req.user; // object with user object inside
-//     const messageArray = ['message 1', 'message 2', 'message 3', 'message 4', 'message 5', 'message 6', 'message 7', 'message 8', 'message 9'];
-//     const sameUser = await User.findById(id);
-//     res.json({ id, name, email, message: messageArray, sameUser });
-// });
+router.put('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const formData = req.body.formData
+    const query = {user_id: formData.user_id}
+    console.log(query)
+    const insertedUser = User.findByIdAndUpdate(query, updateDocument, { upsert: true })
+    const updateDocument = {
+        $set: {
+            first_name: formData.first_name,
+            dob_day: formData.dob_day,
+            dob_month: formData.dob_month,
+            dob_year: formData.dob_year,
+            show_gender: formData.show_gender,
+            gender_identity: formData.gender_identity,
+            gender_interest: formData.gender_interest,
+            url: formData.url,
+            about: formData.about,
+            matches: formData.matches
+        },
+    }
+    res.json(insertedUser)
+    if (err) return res.send(500, {error: err});
+    return res.send('Successfully updated')
+})
 
 // Exports
 module.exports = router;
