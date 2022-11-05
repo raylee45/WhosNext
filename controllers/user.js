@@ -133,13 +133,9 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), (req, r
     const updateDocument = {
         $set: {
             first_name: formData.first_name,
-            dob_day: formData.dob_day,
-            dob_month: formData.dob_month,
-            dob_year: formData.dob_year,
-            show_gender: formData.show_gender,
-            gender_identity: formData.gender_identity,
-            gender_interest: formData.gender_interest,
-            url: formData.url,
+            gender: formData.gender,
+            preference: formData.preference,
+            image: formData.image,
             about: formData.about,
             matches: formData.matches
         },
@@ -147,7 +143,19 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), (req, r
     res.json(insertedUser)
     if (err) return res.send(500, {error: err});
     return res.send('Successfully updated')
-})
+});
+
+router.delete('/:id', (req, res) => {
+    Users.findByIdAndRemove(req.params.id)
+    .then(response => {
+        console.log('User was deleted', response);
+        res.json({ message: `User ${req.params.id} was deleted`});
+    })
+    .catch(error => {
+        console.log('error', error) 
+        res.json({ message: "Error ocurred, please try again" });
+    })
+});
 
 // Exports
 module.exports = router;
