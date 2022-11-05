@@ -8,7 +8,7 @@ const passport = require('passport');
 const { JWT_SECRET } = process.env;
 
 // DB Models
-const Users = require('../models/user');
+const User = require('../models/user');
 
 // put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -16,7 +16,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
     res.json({ message: 'User endpoint OK! ✅' });
     console.log('=====> Inside GET /users');
 
-    Users.findById(req.params.id)
+    User.findById(req.params.id)
     .then(foundUsers => {
         res.json({ user: foundUsers });
     })
@@ -31,7 +31,7 @@ router.post('/signup', (req, res) => {
     console.log('===> Inside of /signup');
     console.log('===> /register -> req.body',req.body);
 
-    Users.findOne({ email: req.body.email })
+    User.findOne({ email: req.body.email })
     .then(users => {
         // if email already exists, a user will come back
         if (users) {
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
     console.log('===> Inside of /login');
     console.log('===> /login -> req.body', req.body);
 
-    const foundUser = await Users.findOne({ email: req.body.email });
+    const foundUser = await User.findOne({ email: req.body.email });
 
     if (foundUser) {
         // user is in the DB
@@ -129,7 +129,7 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), (req, r
     const formData = req.body.formData
     const query = {user_id: formData.user_id}
     console.log(query)
-    const insertedUser = User.findByIdAndUpdate(query, updateDocument, { upsert: true })
+    const insertedUser = Users.findByIdAndUpdate(query, updateDocument, { upsert: true })
     const updateDocument = {
         $set: {
             first_name: formData.first_name,
@@ -145,8 +145,8 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), (req, r
     return res.send('Successfully updated')
 });
 
-router.delete('/:id', (req, res) => {
-    Users.findByIdAndRemove(req.params.id)
+router.delete('/profile/:id', (req, res) => {
+    User.findByIdAndRemove(req.params.id)
     .then(response => {
         console.log('User was deleted', response);
         res.json({ message: `User ${req.params.id} was deleted`});
