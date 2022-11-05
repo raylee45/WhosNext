@@ -8,7 +8,9 @@ const messageSchema = new Schema({
     },
     message: String,
     timestamp: String,
-    to_userId: String,
+    to_userId: {
+        type: mongoose.Types.ObjectId,
+    }
 });
 
 const Messages = mongoose.model('Messages', messageSchema);

@@ -11,37 +11,6 @@ const mongoose = require('mongoose');
 const Messages = require('../models/message');
 const User = require('../models/user')
 
-// const index = async (req, res) => {
-//   const allMessages = await db.Message.find();
-//   if (allMessages.length >= 1) res.json({ messages: allMessages });
-//   else res.json({ messages: 'There are no messages' });
-// }
-
-// const show = async (req, res) => {
-//   const showMessage = await db.Message.findOne({ _id: req.params.id });
-//   res.json({ message: showMessage });
-// }
-
-
-// router.get('/message', async (req, res) => {
-//     const client = new MongoClient(MONGO_CONNECTION_STRING)
-//     const { userId, correspondingUserId } = req.query
-//     // console.log(userId, correspondingUserId)
-//     try {
-//       await client.connect()
-//       const database = client.db('whosNext')
-//       const messages = database.collection('messages')
-    
-//       const query = {
-//         from_userId: userId, to_userId: correspondingUserId
-//       }
-//       const foundMessages = await messages.find(query).toArray()
-//       res.send(foundMessages)
-//     } finally {
-//         await client.close()
-//     }
-//   })
-
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     // Purpose: Fetch one example from DB and return
     console.log('=====> Inside GET /message');
