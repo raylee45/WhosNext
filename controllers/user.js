@@ -125,14 +125,14 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     res.json({ id, name, email, about, gender, preference, image });
 });
 
-router.put('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.put('/profile/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
     const formData = req.body.formData
     const query = {user_id: formData.user_id}
     console.log(query)
     const insertedUser = Users.findByIdAndUpdate(query, updateDocument, { upsert: true })
     const updateDocument = {
         $set: {
-            first_name: formData.first_name,
+            name: formData.name,
             gender: formData.gender,
             preference: formData.preference,
             image: formData.image,
