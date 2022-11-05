@@ -13,20 +13,29 @@ const Match = require('../models/match')
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.log('=====> Inside GET /matches')
-    try {
-        User.findAll(req.params.id)
-    }
-    .then((matched)=> {
-        User.
+    .then((matchedUsers)=> {
+        if (matchedUsers.length === 0) throw Error ('No current matches')
+        User.forEach(matchedUserId => {
+            matchedUserId.findAll ({
+                where: {
+                    [Op.and]: [
+                        {name: req.user.name},
+                        {image: req.user.image}
+                    ]
+                }
+            })
+        })
     })
-
-});
+    .catch (err => {
+        console.log('Error in matches:', err);
+    })
+})
 
 router.delete('/', (req, res) => {
     Match.findByIdAndRemove(req.params.id)
     .then(response => {
-        console.log('Match was deleted', response);
-        res.json({ message: `Match ${req.params.id} was deleted`});
+        console.log('User has been unmatched!', response);
+        res.json({ message: `User ${req.params.id} was unmatched!`});
     })
     .catch(error => {
         console.log('error', error) 
