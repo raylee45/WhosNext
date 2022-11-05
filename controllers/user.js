@@ -125,26 +125,6 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     res.json({ id, name, email, about, gender, preference, image });
 });
 
-router.put('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const formData = req.body.formData
-    const query = {user_id: formData.user_id}
-    console.log(query)
-    const insertedUser = Users.findByIdAndUpdate(query, updateDocument, { upsert: true })
-    const updateDocument = {
-        $set: {
-            first_name: formData.first_name,
-            gender: formData.gender,
-            preference: formData.preference,
-            image: formData.image,
-            about: formData.about,
-            matches: formData.matches
-        },
-    }
-    res.json(insertedUser)
-    if (err) return res.send(500, {error: err});
-    return res.send('Successfully updated')
-});
-
 router.delete('/profile/:id', (req, res) => {
     User.findByIdAndRemove(req.params.id)
     .then(response => {
@@ -155,6 +135,16 @@ router.delete('/profile/:id', (req, res) => {
         console.log('error', error) 
         res.json({ message: "Error ocurred, please try again" });
     })
+});
+
+router.put('/profile/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+        await User.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true}, (error, user) => {
+            if (error) {
+                res.send(error)
+            }
+            res.json(user)
+    })
+    // return res.json(req.body)
 });
 
 // Exports

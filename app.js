@@ -295,6 +295,8 @@ app.put('/addmatch', async(req, res) => {
 
 app.use('/message', require('./controllers/message'));
 app.use('/users', require('./controllers/user'));
+app.use('/match', require('./controllers/matches'));
+
 
 // Server
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
