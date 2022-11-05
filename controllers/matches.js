@@ -21,3 +21,4 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
         res.json({ message: 'Error occured... Please try again.'})
     });
 });
+
