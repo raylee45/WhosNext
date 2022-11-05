@@ -295,7 +295,7 @@ app.put('/addmatch', async(req, res) => {
 
 app.use('/message', require('./controllers/message'));
 app.use('/users', require('./controllers/user'));
-app.use('/match', require('./controllers/matches'));
+app.use('/matches', require('./controllers/matches'));
 
 
 // Server

@@ -13,17 +13,22 @@ const User = require('../models/user');
 // put this inside route to authenticate -> passport.authenticate('jwt', { session: false })
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     // Purpose: Fetch all users from DB and return
-    res.json({ message: 'User endpoint OK! ✅' });
-    console.log('=====> Inside GET /users');
-
-    User.findById(req.params.id)
-    .then(foundUsers => {
-        res.json({ user: foundUsers });
+    User.find({})
+    .then(users => {
+        let usersArray = users.filter((user, id) => {
+            if (user.id === req.user.id) {
+                console.log('found myself in the chaos!')
+                return false;
+            } else {
+                return true;
+            }
+        });
+        res.json({ users: usersArray })
     })
-    .catch(err => {
-        console.log('Error in user#index:', err);
+    .catch(error => {
+        console.log('Error finding user', error);
         res.json({ message: 'Error occured... Please try again.'})
-    });
+    })
 }); 
 
 router.post('/signup', (req, res) => {

@@ -13,21 +13,49 @@ const Match = require('../models/match')
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.log('=====> Inside GET /matches')
-    .then((matchedUsers)=> {
-        if (matchedUsers.length === 0) throw Error ('No current matches')
-        User.forEach(matchedUserId => {
-            matchedUserId.findAll ({
-                where: {
-                    [Op.and]: [
-                        {name: req.user.name},
-                        {image: req.user.image}
-                    ]
-                }
-            })
-        })
+    User.findById(req.user.id).populate('matches').exec()
+    .then(user => {
+        if (user.matches.length === 0) {
+            res.json({ user: user, matches: "No current matches" })
+        } else {
+            console.log('this is the user', user);
+            let matches = [...user.matches];
+            delete user.matches;
+            res.json({ user: user, matches: matches });
+        }
     })
-    .catch (err => {
-        console.log('Error in matches:', err);
+    .catch(error => {
+        console.log('error', error) 
+        res.json({ message: "Error ocurred, please try again" });
+    })
+    // .then((matchedUsers)=> {
+    //     if (matchedUsers.length === 0) throw Error ('No current matches')
+    //     User.forEach(matchedUserId => {
+    //         matchedUserId.findAll ({
+    //             where: {
+    //                 [Op.and]: [
+    //                     {name: req.user.name},
+    //                     {image: req.user.image}
+    //                 ]
+    //             }
+    //         })
+    //     })
+    // })
+    // .catch (err => {
+    //     console.log('Error in matches:', err);
+    // })
+});
+
+router.post('/create',  passport.authenticate('jwt', { session: false }), (req, res) => {
+    User.findById(req.user.id)
+    .then(user => {
+        user.matches.push(req.body);
+        user.save();
+        // res.redirect('/matches'); something along these lines
+    })
+    .catch(error => {
+        console.log('error', error) 
+        res.json({ message: "Error ocurred, please try again" });
     })
 })
 
@@ -42,6 +70,8 @@ router.delete('/', (req, res) => {
         res.json({ message: "Error ocurred, please try again" });
     })
 });
+
+module.exports = router
 
 
 //As a user i must be able to signup and login process
