@@ -49,8 +49,12 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 router.post('/create',  passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findById(req.user.id)
     .then(user => {
-        user.matches.push(req.body);
-        user.save();
+        User.findById(req.body.matchId)
+        .then(matchUser => {
+            user.matches.push(matchUser);
+            user.save();
+            res.json({ message: `${matchUser.name} is now saved as a match` });
+        })
         // res.redirect('/matches'); something along these lines
     })
     .catch(error => {
