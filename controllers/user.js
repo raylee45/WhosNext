@@ -127,7 +127,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     console.log('====> user')
     console.log(req.user);
     const { id, name, email, about, gender, preference, image } = req.user; // object with user object inside
-    res.json({ id, name, email, about, gender, preference, image });
+    res.json(req.user);
 });
 
 router.delete('/profile/:id', (req, res) => {
