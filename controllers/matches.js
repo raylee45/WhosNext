@@ -49,12 +49,20 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 router.post('/create',  passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findById(req.user.id)
     .then(user => {
-        User.findById(req.body.data.matchId)
-        .then(matchUser => {
-            user.matches.push(matchUser);
-            user.save();
-            res.json({ message: `${matchUser.name} is now saved as a match` });
-        })
+        user.matches = user.matches.filter(u => u === null ? false : true);
+        user.save();
+        const searchIndex = user.matches.findIndex((person) => person._id==req.body.data.matchId);
+        if (searchIdex > -1) {
+            res.json({ message: `${person.name} is already a match`});
+        } else {
+            User.findById(req.body.data.matchId)
+            .then(matchUser => {
+                user.matches.push(matchUser);
+                user.save();
+                res.json({ message: `${matchUser.name} is now saved as a match` });
+            })
+        }
+        
         // res.redirect('/matches'); something along these lines
     })
     .catch(error => {
