@@ -49,7 +49,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 router.post('/create',  passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findById(req.user.id)
     .then(user => {
-        User.findById(req.body.matchId)
+        User.findById(req.body.data.matchId)
         .then(matchUser => {
             user.matches.push(matchUser);
             user.save();
