@@ -52,7 +52,7 @@ router.post('/create',  passport.authenticate('jwt', { session: false }), (req, 
         user.matches = user.matches.filter(u => u === null ? false : true);
         user.save();
         const searchIndex = user.matches.findIndex((person) => person._id==req.body.data.matchId);
-        if (searchIdex > -1) {
+        if (searchIndex > -1) {
             res.json({ message: `${person.name} is already a match`});
         } else {
             User.findById(req.body.data.matchId)
@@ -71,17 +71,7 @@ router.post('/create',  passport.authenticate('jwt', { session: false }), (req, 
     })
 })
 
-router.delete('/', (req, res) => {
-    Match.findByIdAndRemove(req.params.id)
-    .then(response => {
-        console.log('User has been unmatched!', response);
-        res.json({ message: `User ${req.params.id} was unmatched!`});
-    })
-    .catch(error => {
-        console.log('error', error) 
-        res.json({ message: "Error ocurred, please try again" });
-    })
-});
+
 
 module.exports = router
 
