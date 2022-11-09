@@ -50,8 +50,9 @@ router.post('/create',  passport.authenticate('jwt', { session: false }), (req, 
     User.findById(req.user.id)
     .then(user => {
         user.matches = user.matches.filter(u => u === null ? false : true);
-        user.save();
         const searchIndex = user.matches.findIndex((person) => person._id==req.body.data.matchId);
+        if (searchIndex === -1) {
+            res.json({ message: `person is already a match`});
         if (searchIndex > -1) {
             res.json({ message: `${person.name} is already a match`});
         } else {
